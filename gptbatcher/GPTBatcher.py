@@ -9,9 +9,10 @@ from gptbatcher.JobQueue import JobQueue
 
 ParticipantChoice = Tuple[Participant, Choice]
 
-async def ask_once(openai: OpenAI, question: Question, participant: Participant) -> ParticipantChoice:
+async def ask_once(openai: OpenAI, model: str, temperature: float, question: Question, participant: Participant) -> ParticipantChoice:
     completion = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model=model,
+        temperature=temperature,
         messages=[
             {"role": "system", "content": participant.prompt},
             {"role": "user", "content": question.prompt},
@@ -53,7 +54,7 @@ async def ask_once(openai: OpenAI, question: Question, participant: Participant)
 
     chosen = None
     for choice in question.choices:
-        if results[choice.label]:
+        if choice.label in results and results[choice.label]:
             if chosen:
                 raise Exception("Multiple choices selected")
             chosen = choice
@@ -63,17 +64,27 @@ async def ask_once(openai: OpenAI, question: Question, participant: Participant)
     
     return (participant, chosen)
 
+async def retry_ask_once(openai: OpenAI, model: str, temperature: float, question: Question, participant: Participant) -> ParticipantChoice:
+    for _ in range(3):
+        try:
+            return await ask_once(openai, model, temperature, question, participant)
+        except:
+            pass
+    raise Exception("Failed to vote")
+
 
 class GPTBatcher:
-    def __init__(self, api_key: str, rpm: int = 3):
+    def __init__(self, api_key: str, rpm: int = 3, model: str = "gpt-3.5-turbo", temperature: float = 0.5):
         self.openai = OpenAI(api_key=api_key)
         self.rpm = rpm
+        self.model = model
+        self.temperature = temperature
 
     def ask(self, question: Question, participants: List[Participant]) -> DataFrame:
         jobs = []
         for participant in participants:
             for _ in range(participant.samples):
-                jobs.append((ask_once, (self.openai, question, participant)))
+                jobs.append((retry_ask_once, (self.openai, self.model, self.temperature, question, participant)))
         job_queue = JobQueue(tokens=self.rpm, jobs=jobs)
         results: List[ParticipantChoice] = job_queue.run()
         df = DataFrame(0, columns=[choice.label for choice in question.choices], index=[participant.label for participant in participants])
