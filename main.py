@@ -1,7 +1,7 @@
 from gptbatcher import GPTBatcher, Question, Choice, Participant
 import os
 
-batcher = GPTBatcher(api_key=os.environ['OPENAI_API_KEY'], rpm=3)
+batcher = GPTBatcher(api_key=os.environ['OPENAI_API_KEY'], rpm=20)
 
 berlin = Choice(label="Berlin", prompt="Berlin")
 munich = Choice(label="Munich", prompt="Munich")
@@ -14,8 +14,8 @@ question = Question(
     choices=[berlin, munich, hamburg, frankfurt]
 )
 
-segmentA = Participant(label="Segment A", prompt="You are a 26 year old male from Birmingham, UK", samples=1)
-segmentB = Participant(label="Segment B", prompt="You are a 45 year old female from London, UK", samples=2)
+segmentA = Participant(label="Segment A", prompt="You are a 26 year old male from Birmingham, UK", samples=10)
+segmentB = Participant(label="Segment B", prompt="You are a 45 year old female from London, UK", samples=20)
 
 participants = [segmentA, segmentB]
 

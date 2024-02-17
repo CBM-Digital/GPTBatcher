@@ -70,14 +70,12 @@ class GPTBatcher:
         self.rpm = rpm
 
     def ask(self, question: Question, participants: List[Participant]) -> DataFrame:
-        job_queue = JobQueue(tokens=self.rpm)
         jobs = []
         for participant in participants:
             for _ in range(participant.samples):
                 jobs.append((ask_once, (self.openai, question, participant)))
-        print(f"Running {len(jobs)} jobs")
-        results: List[ParticipantChoice] = job_queue.run(jobs)
-        print(f"Got {len(results)} results")
+        job_queue = JobQueue(tokens=self.rpm, jobs=jobs)
+        results: List[ParticipantChoice] = job_queue.run()
         df = DataFrame(0, columns=[choice.label for choice in question.choices], index=[participant.label for participant in participants])
         for participant, choice in results:
             df.at[participant.label, choice.label] += 1
