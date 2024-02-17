@@ -14,12 +14,13 @@ question = Question(
     choices=[berlin, munich, hamburg, frankfurt]
 )
 
-segmentA = Participant(label="Segment A", prompt="You are a 26 year old male from Birmingham, UK", samples=50)
-segmentB = Participant(label="Segment B", prompt="You are a 45 year old female from London, UK", samples=50)
+segmentA = Participant(label="Segment A", prompt="You are a 26 year old male from Birmingham, UK", samples=1)
+segmentB = Participant(label="Segment B", prompt="You are a 45 year old female from London, UK", samples=2)
 
 participants = [segmentA, segmentB]
 
 result = batcher.ask(question=question, participants=participants)
+print(result)
 # result = pd.DataFrame([[30, 20, 0, 0], [20, 30, 0, 0]], columns=['Berlin', 'Munich', 'Hamburg', 'Frankfurt'], index=['Segment A', 'Segment B'])
 
 

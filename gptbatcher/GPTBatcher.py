@@ -9,7 +9,7 @@ from gptbatcher.JobQueue import JobQueue
 
 ParticipantChoice = Tuple[Participant, Choice]
 
-def ask_once(openai: OpenAI, question: Question, participant: Participant) -> ParticipantChoice:
+async def ask_once(openai: OpenAI, question: Question, participant: Participant) -> ParticipantChoice:
     completion = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -44,9 +44,6 @@ def ask_once(openai: OpenAI, question: Question, participant: Participant) -> Pa
     )
 
     choice = completion.choices[0]
-    if choice.finish_reason is not "tool_calls":
-        raise Exception("Tool call not made")
-    
     calls = choice.message.tool_calls
     if not calls or len(calls) != 1:
         raise Exception("Expected one tool call")
@@ -78,7 +75,9 @@ class GPTBatcher:
         for participant in participants:
             for _ in range(participant.samples):
                 jobs.append((ask_once, (self.openai, question, participant)))
+        print(f"Running {len(jobs)} jobs")
         results: List[ParticipantChoice] = job_queue.run(jobs)
+        print(f"Got {len(results)} results")
         df = DataFrame(0, columns=[choice.label for choice in question.choices], index=[participant.label for participant in participants])
         for participant, choice in results:
             df.at[participant.label, choice.label] += 1
