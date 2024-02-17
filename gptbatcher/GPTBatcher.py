@@ -1,13 +1,15 @@
 import json
 from openai import OpenAI
 from pandas import DataFrame
-from typing import List, Dict
+from typing import List, Tuple
 from gptbatcher.Question import Question
 from gptbatcher.Participant import Participant
 from gptbatcher.Choice import Choice
+from gptbatcher.JobQueue import JobQueue
 
+ParticipantChoice = Tuple[Participant, Choice]
 
-def ask_once(openai: OpenAI, question: Question, participant: Participant) -> Choice:
+def ask_once(openai: OpenAI, question: Question, participant: Participant) -> ParticipantChoice:
     completion = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -62,12 +64,22 @@ def ask_once(openai: OpenAI, question: Question, participant: Participant) -> Ch
     if not chosen:
         raise Exception("No choice selected")
     
-    return chosen
+    return (participant, chosen)
 
 
 class GPTBatcher:
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, rpm: int = 3):
         self.openai = OpenAI(api_key=api_key)
+        self.rpm = rpm
 
     def ask(self, question: Question, participants: List[Participant]) -> DataFrame:
-        raise NotImplementedError
+        job_queue = JobQueue(tokens=self.rpm)
+        jobs = []
+        for participant in participants:
+            for _ in range(participant.samples):
+                jobs.append((ask_once, (self.openai, question, participant)))
+        results: List[ParticipantChoice] = job_queue.run(jobs)
+        df = DataFrame(0, columns=[choice.label for choice in question.choices], index=[participant.label for participant in participants])
+        for participant, choice in results:
+            df.at[participant.label, choice.label] += 1
+        return df

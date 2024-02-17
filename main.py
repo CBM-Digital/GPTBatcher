@@ -1,7 +1,7 @@
 from gptbatcher import GPTBatcher, Question, Choice, Participant
 import os
 
-batcher = GPTBatcher(api_key=os.environ['OPENAI_API_KEY'])
+batcher = GPTBatcher(api_key=os.environ['OPENAI_API_KEY'], rpm=3)
 
 berlin = Choice(label="Berlin", prompt="Berlin")
 munich = Choice(label="Munich", prompt="Munich")
