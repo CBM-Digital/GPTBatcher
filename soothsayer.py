@@ -94,10 +94,14 @@ def main():
         choices=[red, green, blue, yellow, other],
     )
 
-    result = batcher.ask(question=question, participants=participants, samples=1)
+    samples = 10
 
+    print(f"Sampling {samples} times")
+    df = batcher.ask(question=question, participants=participants, samples=10)
     print(question)
-    print(result)
+    # print(df)
+    # print the total votes for each choice
+    print(df.sum())
 
 
 if __name__ == "__main__":
