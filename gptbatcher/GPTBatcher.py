@@ -2,10 +2,9 @@ import json
 from openai import OpenAI
 from pandas import DataFrame
 from typing import List, Tuple
-from gptbatcher.Question import Question
-from gptbatcher.Participant import Participant
-from gptbatcher.Choice import Choice
+from gptbatcher import Choice, Participant, Question
 from gptbatcher.JobQueue import JobQueue
+from gptbatcher.Sampler import Sampler
 
 ParticipantChoice = Tuple[Participant, Choice]
 
@@ -98,22 +97,25 @@ class GPTBatcher:
         self.model = model
         self.temperature = temperature
 
-    def ask(self, question: Question, participants: List[Participant]) -> DataFrame:
+    def ask(
+        self, question: Question, participants: List[Participant], samples: int
+    ) -> DataFrame:
         jobs = []
-        for participant in participants:
-            for _ in range(participant.samples):
-                jobs.append(
+        sampler = Sampler(participants, lambda p: p.weight)
+        for _ in range(samples):
+            participant = sampler.sample()
+            jobs.append(
+                (
+                    retry_ask_once,
                     (
-                        retry_ask_once,
-                        (
-                            self.openai,
-                            self.model,
-                            self.temperature,
-                            question,
-                            participant,
-                        ),
-                    )
+                        self.openai,
+                        self.model,
+                        self.temperature,
+                        question,
+                        participant,
+                    ),
                 )
+            )
         job_queue = JobQueue(tokens=self.rpm, jobs=jobs)
         results: List[ParticipantChoice] = job_queue.run()
         df = DataFrame(

@@ -1,8 +1,8 @@
 class Participant:
-    def __init__(self, label: str, prompt: str, samples: int):
+    def __init__(self, label: str, prompt: str, weight: float):
         self.label = label
         self.prompt = prompt
-        self.samples = samples
+        self.weight = weight
 
     def __str__(self):
         return self.label

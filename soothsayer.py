@@ -48,9 +48,7 @@ def generate_combinations(data) -> WeightedCombinations:
     return weights
 
 
-def generate_participants(
-    combinations: WeightedCombinations, total_samples: int
-) -> List[Participant]:
+def generate_participants(combinations: WeightedCombinations) -> List[Participant]:
     participants = []
     for (
         age_range,
@@ -62,8 +60,7 @@ def generate_participants(
         age_min, age_max = age_range
         label = f"{gender.capitalize()}, {age_min}-{age_max}, {race}, {marital_status}, {education}"
         prompt = f"You are a {age_min}-{age_max} year old {gender} from England, UK, of {race} race, {marital_status}, with {education}."
-        samples = int(weight * total_samples)
-        participants.append(Participant(label=label, prompt=prompt, samples=samples))
+        participants.append(Participant(label=label, prompt=prompt, weight=weight))
 
     return participants
 
@@ -75,14 +72,8 @@ def main():
     data = data["England"]
 
     combinations = generate_combinations(data)
-    print("Total weight:", sum(combinations.values()))
-
-    total_samples = 200
-    print("Ideal total samples:", total_samples)
-    participants = generate_participants(combinations, total_samples=total_samples)
-    print(
-        "Real total samples:", sum(participant.samples for participant in participants)
-    )
+    participants = generate_participants(combinations)
+    print("Total weight:", sum(participant.weight for participant in participants))
 
     batcher = GPTBatcher(
         api_key=os.environ["OPENAI_API_KEY"],
@@ -103,7 +94,7 @@ def main():
         choices=[red, green, blue, yellow, other],
     )
 
-    result = batcher.ask(question=question, participants=participants)
+    result = batcher.ask(question=question, participants=participants, samples=1)
 
     print(question)
     print(result)
