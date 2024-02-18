@@ -9,7 +9,14 @@ from gptbatcher.JobQueue import JobQueue
 
 ParticipantChoice = Tuple[Participant, Choice]
 
-async def ask_once(openai: OpenAI, model: str, temperature: float, question: Question, participant: Participant) -> ParticipantChoice:
+
+async def ask_once(
+    openai: OpenAI,
+    model: str,
+    temperature: float,
+    question: Question,
+    participant: Participant,
+) -> ParticipantChoice:
     completion = openai.chat.completions.create(
         model=model,
         temperature=temperature,
@@ -17,31 +24,29 @@ async def ask_once(openai: OpenAI, model: str, temperature: float, question: Que
             {"role": "system", "content": participant.prompt},
             {"role": "user", "content": question.prompt},
         ],
-        tools=[{
-            "type": "function",
-            "function": {
-                "name": "vote",
-                "description": "Vote on a poll",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        **{
-                            choice.label: {
-                                "type": "boolean",
-                                "description": choice.prompt
-                            } for choice in question.choices
-                        }
+        tools=[
+            {
+                "type": "function",
+                "function": {
+                    "name": "vote",
+                    "description": "Vote on a poll",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            **{
+                                choice.label: {
+                                    "type": "boolean",
+                                    "description": choice.prompt,
+                                }
+                                for choice in question.choices
+                            }
+                        },
+                        "required": [choice.label for choice in question.choices],
                     },
-                    "required": [choice.label for choice in question.choices],
-                }
+                },
             }
-        }],
-        tool_choice={
-            "type": "function",
-            "function": {
-                "name": "vote",
-            }
-        }
+        ],
+        tool_choice={"type": "function", "function": {"name": "vote"}},
     )
 
     choice = completion.choices[0]
@@ -61,10 +66,17 @@ async def ask_once(openai: OpenAI, model: str, temperature: float, question: Que
 
     if not chosen:
         raise Exception("No choice selected")
-    
+
     return (participant, chosen)
 
-async def retry_ask_once(openai: OpenAI, model: str, temperature: float, question: Question, participant: Participant) -> ParticipantChoice:
+
+async def retry_ask_once(
+    openai: OpenAI,
+    model: str,
+    temperature: float,
+    question: Question,
+    participant: Participant,
+) -> ParticipantChoice:
     for _ in range(3):
         try:
             return await ask_once(openai, model, temperature, question, participant)
@@ -74,7 +86,13 @@ async def retry_ask_once(openai: OpenAI, model: str, temperature: float, questio
 
 
 class GPTBatcher:
-    def __init__(self, api_key: str, rpm: int = 3, model: str = "gpt-3.5-turbo", temperature: float = 0.5):
+    def __init__(
+        self,
+        api_key: str,
+        rpm: int = 3,
+        model: str = "gpt-3.5-turbo",
+        temperature: float = 0.5,
+    ):
         self.openai = OpenAI(api_key=api_key)
         self.rpm = rpm
         self.model = model
@@ -84,10 +102,25 @@ class GPTBatcher:
         jobs = []
         for participant in participants:
             for _ in range(participant.samples):
-                jobs.append((retry_ask_once, (self.openai, self.model, self.temperature, question, participant)))
+                jobs.append(
+                    (
+                        retry_ask_once,
+                        (
+                            self.openai,
+                            self.model,
+                            self.temperature,
+                            question,
+                            participant,
+                        ),
+                    )
+                )
         job_queue = JobQueue(tokens=self.rpm, jobs=jobs)
         results: List[ParticipantChoice] = job_queue.run()
-        df = DataFrame(0, columns=[choice.label for choice in question.choices], index=[participant.label for participant in participants])
+        df = DataFrame(
+            0,
+            columns=[choice.label for choice in question.choices],
+            index=[participant.label for participant in participants],
+        )
         for participant, choice in results:
             df.at[participant.label, choice.label] += 1
         return df

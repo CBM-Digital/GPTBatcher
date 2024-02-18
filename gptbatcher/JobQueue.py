@@ -4,7 +4,9 @@ from typing import Callable, List, Any, Tuple
 
 
 class JobQueue:
-    def __init__(self, tokens: int, jobs: List[Tuple[Callable[..., Any], Tuple[Any, ...]]]):
+    def __init__(
+        self, tokens: int, jobs: List[Tuple[Callable[..., Any], Tuple[Any, ...]]]
+    ):
         self.tokens = asyncio.Semaphore(tokens)
         self.results = []
         self.jobs = jobs
@@ -34,6 +36,6 @@ class JobQueue:
         tasks = [self.run_job(job, *args) for job, args in self.jobs]
         await asyncio.gather(*tasks)
         return self.results
-    
+
     def run(self) -> List[Any]:
         return asyncio.run(self.run_all())
