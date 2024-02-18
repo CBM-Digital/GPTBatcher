@@ -42,7 +42,7 @@ def generate_participants(combinations: WeightedCombinations, total_samples: int
     for (age_range, gender, race, marital_status, education), weight in combinations.items():
         age_min, age_max = age_range
         label = f"{gender.capitalize()}, {age_min}-{age_max}, {race}, {marital_status}, {education}"
-        prompt = f"You are a {age_min}-{age_max} year old {gender} from England, UK, of {race} race, {marital_status}, with {education} education"
+        prompt = f"You are a {age_min}-{age_max} year old {gender} from England, UK, of {race} race, {marital_status}, with {education}."
         samples = int(weight * total_samples)
         participants.append(Participant(label=label, prompt=prompt, samples=samples))
 
