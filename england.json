@@ -1,0 +1,60 @@
+{
+	"England": {
+		"age_range": [
+			{"range": [20,24], "weight": 0.0786, "gender_weights": {"male": 0.5017, "female": 0.4983}},
+			{"range": [25,29], "weight": 0.0855, "gender_weights": {"male": 0.4893, "female": 0.5107}},
+			{"range": [30,34], "weight": 0.0910, "gender_weights": {"male": 0.4828, "female": 0.5172}},
+			{"range": [35,39], "weight": 0.0874, "gender_weights": {"male": 0.4853, "female": 0.5147}},
+			{"range": [40,44], "weight": 0.0824, "gender_weights": {"male": 0.4898, "female": 0.5102}},
+			{"range": [45,49], "weight": 0.0829, "gender_weights": {"male": 0.4933, "female": 0.5067}},
+			{"range": [50,54], "weight": 0.0900, "gender_weights": {"male": 0.4921, "female": 0.5079}},
+			{"range": [55,59], "weight": 0.0876, "gender_weights": {"male": 0.4912, "female": 0.5088}},
+			{"range": [60,64], "weight": 0.0750, "gender_weights": {"male": 0.4920, "female": 0.5080}},
+			{"range": [65,69], "weight": 0.0637, "gender_weights": {"male": 0.4849, "female": 0.5151}},
+			{"range": [70,74], "weight": 0.0644, "gender_weights": {"male": 0.4762, "female": 0.5238}},
+			{"range": [75,79], "weight": 0.0469, "gender_weights": {"male": 0.4646, "female": 0.5354}},
+			{"range": [80,84], "weight": 0.0329, "gender_weights": {"male": 0.4402, "female": 0.5598}},
+			{"range": [85,89], "weight": 0.0201, "gender_weights": {"male": 0.4029, "female": 0.5971}},
+			{"range": [90,99], "weight": 0.0115, "gender_weights": {"male": 0.3207, "female": 0.6793}}
+		],
+		"education": {"no qualifications": 0.1808, "some high school education": 0.0969, "high school education": 0.1332, "vocational training": 0.0808, "college education": 0.1692, "higher education": 0.3392},
+		"marital_status": [
+			{
+				"status": "married",
+				"weights": {
+					"male": 0.4626,
+					"female": 0.4322
+				}
+			},
+			{
+				"status": "widowed",
+				"weights": {
+					"male": 0.0306,
+					"female": 0.0888
+				}
+			},
+			{
+				"status": "divorced",
+				"weights": {
+					"male": 0.0776,
+					"female": 0.1030
+				}
+			},
+			{
+				"status": "separated",
+				"weights": {
+					"male": 0.0198,
+					"female": 0.0250
+				}
+			},
+			{
+				"status": "never married",
+				"weights": {
+					"male": 0.4094,
+					"female": 0.3510
+				}
+			}
+		],
+		"race": {"bangladeshi": 0.0111, "chinese": 0.0076, "indian": 0.0326, "pakistani": 0.0278, "asian": 0.0169, "black": 0.0422, "mixed race": 0.0296, "white british": 0.7354, "irish": 0.0087, "roma": 0.0018, "traveller": 0.0011, "white non-british": 0.0635, "arab": 0.0057, "other": 0.0161}
+	}
+}
