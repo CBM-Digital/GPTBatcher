@@ -35,7 +35,7 @@ segmentA = Participant(
 segmentB = Participant(
     label="Segment B",
     prompt="You are a 45 year old female from London, UK",
-    samples=2
+    weight=2
 )
 
 participants = [segmentA, segmentB]
