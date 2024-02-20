@@ -2,6 +2,20 @@
 
 GPTBatcher is a Python package that allows you to run multiple GPT-3 completions in parallel. It is useful for running surveys, polls, or any other task that requires multiple completions. It returns a pandas data frame with the results.
 
+## Installation
+
+```bash
+pip install gptbatcher
+```
+
+## Setup
+
+You will need an OpenAI API key to use GPTBatcher. You can get one by signing up at https://beta.openai.com/signup/. Once you have your API key, you can set it as an environment variable in your terminal:
+
+```bash
+export OPENAI_API_KEY="<your-api-key>"
+```
+
 ## Usage
 
 ```python
@@ -27,6 +41,31 @@ segmentB = Participant(label="Segment B", prompt="You are a 45 year old female f
 participants = [segmentA, segmentB]
 
 result = batcher.ask(question=question, participants=participants)
-print(result)
 # result = pd.DataFrame([[10, 0, 0, 0], [20, 0, 0, 0]], columns=['Berlin', 'Munich', 'Hamburg', 'Frankfurt'], index=['Segment A', 'Segment B'])
+print(question)
+print(result.sum())
 ```
+
+## Running the tests
+
+```bash
+python -m unittest discover
+```
+
+## Running the example
+
+```bash
+python3 -m examples.soothsayer
+```
+
+## Contributing
+
+Please raise an issue if you find a bug or have a feature request. Pull requests are welcome.
+
+## Support
+
+CBM Digital offers support services for this package. Please contact us at https://www.cbmdigital.com/contact/, or by email at contact@cbmdigital.co.uk
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
