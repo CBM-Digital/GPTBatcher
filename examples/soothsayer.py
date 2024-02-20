@@ -66,7 +66,7 @@ def generate_participants(combinations: WeightedCombinations) -> List[Participan
 
 
 def main():
-    filepath = "england.json"
+    filepath = "examples/england.json"
     with open(filepath, "r") as file:
         data = json.load(file)
     data = data["England"]
