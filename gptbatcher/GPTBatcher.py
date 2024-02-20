@@ -2,9 +2,11 @@ import json
 from openai import OpenAI
 from pandas import DataFrame
 from typing import List, Tuple
-from gptbatcher import Choice, Participant, Question
 from gptbatcher.JobQueue import JobQueue
 from gptbatcher.Sampler import Sampler
+from gptbatcher.Question import Question
+from gptbatcher.Choice import Choice
+from gptbatcher.Participant import Participant
 
 ParticipantChoice = Tuple[Participant, Choice]
 
