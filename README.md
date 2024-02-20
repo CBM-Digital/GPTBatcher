@@ -72,7 +72,7 @@ Please raise an issue if you find a bug or have a feature request. Pull requests
 
 ## Support
 
-CBM Digital offers support services for this package. Please contact us at https://www.cbmdigital.com/contact/, or by email at contact@cbmdigital.co.uk
+CBM Digital offers support services for this package. Please contact us at https://www.cbmdigital.co.uk/contact/, or by email at contact@cbmdigital.co.uk
 
 ## License
 
