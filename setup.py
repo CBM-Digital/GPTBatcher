@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='gptbatcher',
-    version='0.1.2',
+    version='0.1.4',
     url='https://github.com/CBM-Digital/GPTBatcher',
     author="James O'Toole",
     author_email='jamesotoole@cbmdigital.co.uk',
