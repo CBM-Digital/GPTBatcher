@@ -27,15 +27,31 @@ question = Question(
     choices=[berlin, munich, hamburg, frankfurt]
 )
 
-segmentA = Participant(label="Segment A", prompt="You are a 26 year old male from Birmingham, UK", samples=10)
-segmentB = Participant(label="Segment B", prompt="You are a 45 year old female from London, UK", samples=20)
+segmentA = Participant(
+    label="Segment A",
+    prompt="You are a 26 year old male from Birmingham, UK",
+    weight=1
+)
+segmentB = Participant(
+    label="Segment B",
+    prompt="You are a 45 year old female from London, UK",
+    samples=2
+)
 
 participants = [segmentA, segmentB]
 
-result = batcher.ask(question=question, participants=participants)
+result = batcher.ask(
+    question=question,
+    participants=participants,
+    samples=30
+)
 # result = pd.DataFrame([[10, 0, 0, 0], [20, 0, 0, 0]], columns=['Berlin', 'Munich', 'Hamburg', 'Frankfurt'], index=['Segment A', 'Segment B'])
 print(question)
 print(result.sum())
+# Berlin       30
+# Munich        0
+# Hamburg       0
+# Frankfurt     0
 ```
 
 ## Running the tests
