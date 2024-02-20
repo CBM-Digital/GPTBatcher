@@ -76,12 +76,13 @@ async def retry_ask_once(
     question: Question,
     participant: Participant,
 ) -> ParticipantChoice:
+    errors = []
     for _ in range(3):
         try:
             return await ask_once(openai, model, temperature, question, participant)
-        except:
-            pass
-    raise Exception("Failed to vote")
+        except Exception as e:
+            errors.append(e)
+    raise Exception(", ".join(str(e) for e in errors))
 
 
 class GPTBatcher:
@@ -92,6 +93,8 @@ class GPTBatcher:
         model: str = "gpt-3.5-turbo",
         temperature: float = 0.5,
     ):
+        if not api_key:
+            raise Exception("API key required. You can find your API key at https://platform.openai.com/account/api-keys")
         self.openai = OpenAI(api_key=api_key)
         self.rpm = rpm
         self.model = model
@@ -118,6 +121,8 @@ class GPTBatcher:
             )
         job_queue = JobQueue(tokens=self.rpm, jobs=jobs)
         results: List[ParticipantChoice] = job_queue.run()
+        if job_queue.errors:
+            raise Exception(", ".join(str(e) for e in job_queue.errors))
         df = DataFrame(
             0,
             columns=[choice.label for choice in question.choices],
