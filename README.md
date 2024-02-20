@@ -8,14 +8,6 @@ GPTBatcher is a Python package that allows you to run multiple GPT-3 completions
 pip install gptbatcher
 ```
 
-## Setup
-
-You will need an OpenAI API key to use GPTBatcher. You can get one by signing up at https://beta.openai.com/signup/. Once you have your API key, you can set it as an environment variable in your terminal:
-
-```bash
-export OPENAI_API_KEY="<your-api-key>"
-```
-
 ## Usage
 
 ```python
