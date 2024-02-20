@@ -9,6 +9,7 @@ class JobQueue:
     ):
         self.tokens = asyncio.Semaphore(tokens)
         self.results = []
+        self.errors = []
         self.jobs = jobs
 
     async def acquire_token(self):
@@ -23,8 +24,10 @@ class JobQueue:
         try:
             result = await job(*args)
             self.results.append(result)
+        except Exception as e:
+            self.errors.append(e)
         finally:
-            while len(self.results) < len(self.jobs):
+            while len(self.results) + len(self.errors) < len(self.jobs):
                 elapsed_time = time.time() - start_time
                 if elapsed_time < 60:
                     await asyncio.sleep(1)
