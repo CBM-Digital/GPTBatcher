@@ -17,6 +17,8 @@ async def ask_once(
     temperature: float,
     question: Question,
     participant: Participant,
+    function_name: str = "vote",
+    function_description: str = "Vote on a poll",
 ) -> ParticipantChoice:
     completion = openai.chat.completions.create(
         model=model,
@@ -29,8 +31,8 @@ async def ask_once(
             {
                 "type": "function",
                 "function": {
-                    "name": "vote",
-                    "description": "Vote on a poll",
+                    "name": function_name,
+                    "description": function_description,
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -47,7 +49,7 @@ async def ask_once(
                 },
             }
         ],
-        tool_choice={"type": "function", "function": {"name": "vote"}},
+        tool_choice={"type": "function", "function": {"name": function_name}},
     )
 
     choice = completion.choices[0]
@@ -77,11 +79,14 @@ async def retry_ask_once(
     temperature: float,
     question: Question,
     participant: Participant,
+    function_name: str = "vote",
+    function_description: str = "Vote on a poll",
+    n: int = 3,
 ) -> ParticipantChoice:
     errors = []
-    for _ in range(3):
+    for _ in range(n):
         try:
-            return await ask_once(openai, model, temperature, question, participant)
+            return await ask_once(openai, model, temperature, question, participant, function_name, function_description)
         except Exception as e:
             errors.append(e)
     raise Exception(", ".join(str(e) for e in errors))
@@ -94,6 +99,9 @@ class GPTBatcher:
         rpm: int = 3,
         model: str = "gpt-3.5-turbo",
         temperature: float = 0.5,
+        function_name: str = "vote",
+        function_description: str = "Vote on a poll",
+        retry: int = 3,
     ):
         if not api_key:
             raise Exception("API key required. You can find your API key at https://platform.openai.com/account/api-keys")
@@ -101,6 +109,9 @@ class GPTBatcher:
         self.rpm = rpm
         self.model = model
         self.temperature = temperature
+        self.function_name = function_name
+        self.function_description = function_description
+        self.retry = retry
 
     def ask(
         self, question: Question, participants: List[Participant], samples: int
@@ -118,6 +129,9 @@ class GPTBatcher:
                         self.temperature,
                         question,
                         participant,
+                        self.function_name,
+                        self.function_description,
+                        self.retry
                     ),
                 )
             )
